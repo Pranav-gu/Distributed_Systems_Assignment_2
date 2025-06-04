@@ -1,0 +1,16 @@
+[ test_ca ]
+basicConstraints = critical,CA:TRUE
+keyUsage = critical, digitalSignature, keyCertSign, cRLSign
+subjectKeyIdentifier = hash
+
+[ test_server ]
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = DNS:{{SERVER_SAN}}
+
+[ test_client ]
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth
+subjectAltName = DNS:{{CLIENT_SAN}}

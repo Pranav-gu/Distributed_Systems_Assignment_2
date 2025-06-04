@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package bft;
+
+option go_package = "./protofiles/services.proto";
+
+service CommanderService {
+  rpc RegisterGeneral(RegisterRequest) returns (RegisterResponse);
+}
+
+
+service GeneralService {
+  rpc CommanderBroadcast(Order) returns (OrderResponse);
+  rpc CrossVerification(Enquire) returns (EnquireResponse);
+}
+
+
+// General registration with Commander
+message RegisterRequest{
+  string address = 1;
+  string port = 2;
+}
+
+
+message RegisterResponse{
+  bool success = 1;
+}
+// General registration with Commander done
+
+
+
+// Commander assigning order to General
+message Order{
+  string order = 1;
+  string port = 2;
+  int32 max_port = 3;
+  int32 min_port = 4;
+}
+
+
+message OrderResponse {
+  bool success = 1;
+}
+// Commander assigning order to General done
+
+
+
+// General asking other Generals for received order
+message Enquire{
+  string address = 1;
+  string send_port = 2;
+  string recv_port = 3;
+}
+
+
+message EnquireResponse {
+  bool success = 1;
+  string order = 2;
+}
+// General asking other Generals for received order done

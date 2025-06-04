@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package stripe;
+
+option go_package = "./protofiles/services.proto";
+
+
+service PaymentGatewayService {
+  rpc RegisterClient(RegisterRequestClient) returns (RegisterResponse);
+  rpc RegisterServer(RegisterRequestServer) returns (RegisterResponse);
+  rpc MakePayment(PaymentDetails) returns (PaymentResponse);
+  rpc ViewBalance(AccountDetailsRequest) returns (AccountDetailsResponse);
+}
+
+
+service BankServers {
+  rpc AuthenticateUser(AuthReq) returns (AuthRes);
+  rpc Transaction(PaymentReqGateway) returns (PaymentResponse);
+  rpc SendBalanceReq(AccountDetailsReqGateway) returns (AccountDetailsRespGateway);
+  
+  // New methods for 2-Phase Commit
+  rpc Prepare(PrepareRequest) returns (PrepareResponse);
+  rpc Commit(CommitRequest) returns (CommitResponse);
+  rpc Abort(AbortRequest) returns (AbortResponse);
+}
+
+
+// Registration with Payment Gateway
+message RegisterRequestClient{
+  string address = 1;
+  string port = 2;
+  string username = 3;
+  string password = 4;
+  string bank = 5;
+}
+
+
+message AuthReq{
+  string username = 1;
+  string password = 2;
+}
+
+
+message AuthRes{
+  bool success = 1;
+  string message = 2;
+}
+
+// Registration with Payment Gateway
+message RegisterRequestServer{
+  string address = 1;
+  string port = 2;
+  string bankname = 3;
+  int32 serverid = 4;
+}
+
+
+message RegisterResponse{
+  bool success = 1;
+}
+// Registration with Payment Gateway done
+
+
+
+
+// Transaction between client and server
+message PaymentDetails {
+  string address = 1;
+  string port = 2;
+  string username = 3;
+  string bank = 4;
+  int32 amount = 5;
+  string receiverusername = 6;
+  string receiverbank = 7;
+  string idemptotent = 8;
+}
+
+
+message PaymentReqGateway {
+  string username = 1;
+  int32 amount = 2;
+}
+
+
+message PaymentResponse {
+  bool success = 1;
+  string message = 2;
+}
+// Transaction between client and server complete
+
+
+
+// Balance viewing
+message AccountDetailsRequest {
+  string address = 1;
+  string port = 2;
+  string username = 3;
+  string bank = 4;
+}
+
+message AccountDetailsResponse {
+  bool success = 1;
+  int32 balance = 2;
+  string message = 3;
+}
+
+
+message AccountDetailsReqGateway {
+  string username = 1;
+}
+
+
+message AccountDetailsRespGateway {
+  bool success = 1;
+  int32 balance = 2;
+}
+// Balance viewing RPCs done
+
+
+// New message types for 2-Phase Commit
+message PrepareRequest {
+  string username = 1;
+  int32 amount = 2;
+  string transaction_id = 3;
+  string operation = 4; // "debit" or "credit"
+}
+
+message PrepareResponse {
+  bool ready = 1;
+  string message = 2;
+}
+
+message CommitRequest {
+  string sender_bank = 1;   // only for receiver to verify. It is required for the case when the Sender and Receiver, both are from the same bank.
+  string recv_bank = 2;   // only for receiver to verify. It is required for the case when the Sender and Receiver, both are from the same bank.  
+  string transaction_id = 3;
+  int32 step = 4;
+}
+
+message CommitResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message AbortRequest {
+  string transaction_id = 1;
+}
+
+message AbortResponse {
+  bool success = 1;
+  string message = 2;
+}

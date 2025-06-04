@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+
+option go_package = "project/protofiles";
+
+service LoadBalancer {
+  rpc RegisterServer(ServerInfo) returns (RegisterResponse);
+  rpc UpdateLoad(ServerLoad) returns (UpdateResponse);
+  rpc GetBestServer(ClientRequest) returns (ServerResponse);
+}
+
+service Backend {
+  rpc ProcessRequest(ComputeTask) returns (ComputeResponse);
+}
+
+
+// done
+message ServerInfo {
+  string address = 1;
+  string port = 2;
+}
+
+message RegisterResponse {
+  bool success = 1;
+}
+// done
+
+
+
+// done
+message ServerLoad {
+  string address = 1;
+  string port = 2;
+  float current_load = 3; // Based upon CPU Usage
+}
+
+message UpdateResponse {
+  bool success = 1;
+}
+// done
+
+
+// done
+message ClientRequest {}
+
+message ServerResponse {
+  string address = 1;
+  string port = 2;
+}
+// done
+
+
+
+// done
+message ComputeTask {
+  int32 a = 1;
+}
+
+message ComputeResponse {
+  int64 result = 1;
+}
+// done

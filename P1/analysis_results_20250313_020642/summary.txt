@@ -1,0 +1,16 @@
+
+    Load Test Analysis Summary
+    =========================
+    Total Requests: 2000
+    Successful Requests: 2000 (100.00%)
+    Test Duration: 100.51 seconds
+    
+    Response Time Statistics:
+    ------------------------
+    Average: 3188.49 ms
+    Median: 28.00 ms
+    Min: 0.00 ms
+    Max: 39244.00 ms
+    
+    Throughput: 19.90 requests/second
+    

@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package mapreduce;
+
+option go_package = "./protofiles/services.proto";
+
+// service MasterService {
+  // Assign a map task to a worker
+  // rpc AssignMapTask(MapTaskRequest) returns (stream TaskResponse);
+  
+  // Assign a reduce task to a worker
+  // rpc AssignReduceTask(ReduceTaskRequest) returns (stream TaskResponse);
+  
+  // Get the status of a worker task
+  // rpc GetTaskStatus(TaskStatusRequest) returns (TaskStatusResponse);
+// }
+
+
+// service WorkerService {
+  // Execute a map task
+  // rpc ExecuteMapTask(MapTaskRequest) returns (TaskResponse);
+  
+  // Execute a reduce task
+  // rpc ExecuteReduceTask(ReduceTaskRequest) returns (TaskResponse);
+  
+  // Report task completion
+  // rpc ReportTaskCompletion(TaskCompletionRequest) returns (TaskResponse);
+// }
+
+
+service MasterService {
+  rpc RegisterWorker(RegisterRequest) returns (RegisterResponse);
+}
+
+
+service WorkerService {
+  rpc InvertedIndex(Task) returns (TaskResponse);
+  rpc WordCount(Task) returns (TaskResponse);
+}
+
+
+// Worker registration with Master
+message RegisterRequest{
+  string address = 1;
+  string port = 2;
+}
+
+
+message RegisterResponse{
+  bool success = 1;
+}
+// Worker registration with Master done
+
+
+
+// Master assigning task to Worker
+message Task{
+  int32 task = 1;
+  string filename = 2;
+  int32 index = 3;
+}
+
+
+message TaskResponse {
+  bool success = 1;
+}
+// Master assigning task to Worker done
