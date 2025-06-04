@@ -107,7 +107,7 @@ func checkOnline(client stripe.PaymentGatewayServiceClient, port string) {
 	for {
 		time.Sleep(10 * time.Second)
 		if loggedIn {
-			file, err := os.OpenFile("pending_transactions.json", os.O_RDONLY, 0644)
+			file, err := os.OpenFile("offline_payments.json", os.O_RDONLY, 0644)
 			if err != nil {
 				fmt.Println("Error opening file:", err)
 				return
@@ -125,7 +125,7 @@ func checkOnline(client stripe.PaymentGatewayServiceClient, port string) {
 					remaining_transactions = append(remaining_transactions, payment)
 					continue
 				}
-				if !checkPortAlive("localhost", "8080", 2*time.Second) { // payment gateway down, queue payments in the pending_transactions.json
+				if !checkPortAlive("localhost", "8080", 2*time.Second) { // payment gateway down, queue payments in the offline_payment.json
 					fmt.Println("Payment Gateway Down, Offline Payment scenario:")
 					remaining_transactions = append(remaining_transactions, payment)
 					continue
@@ -139,7 +139,7 @@ func checkOnline(client stripe.PaymentGatewayServiceClient, port string) {
 				log.Printf("Response from PaymentDetails rpc = %s: %v", port, res)
 			}
 			file.Close()
-			file, _ = os.OpenFile("pending_transactions.json", os.O_WRONLY|os.O_TRUNC, 0644)
+			file, _ = os.OpenFile("offline_payments.json", os.O_WRONLY|os.O_TRUNC, 0644)
 			for i := 0; i < len(remaining_transactions); i++ {
 				jsonData, _ := json.Marshal(remaining_transactions[i])
 				file.Write(jsonData)
@@ -278,17 +278,10 @@ func main() {
 				Receiverbank:     receiver_bank,
 				Idempotent:       idempotent,
 			}
-			file, err := os.OpenFile("pending_transactions.json", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+			file, err := os.OpenFile("offline_payments.json", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 			if err != nil {
 				panic(err)
 			}
-			// encoder := json.NewEncoder(file)
-			// encoder.SetIndent("", "  ") // Pretty-print JSON
-			// if err := encoder.Encode(transaction); err != nil {
-			// 	fmt.Println("Error encoding JSON:", err)
-			// } else {
-			// 	fmt.Println("Data successfully written to pending_transactions.json")
-			// }
 			fmt.Println(payment)
 			jsonData, _ := json.Marshal(payment)
 			file.Write(jsonData)
@@ -296,9 +289,6 @@ func main() {
 			file.Close()
 			continue
 		}
-
-		// conn1, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(creds), grpc.WithTimeout(2*time.Second))
-		// fmt.Println("err = ", err)
 
 		// check if the payment gateway is down or not
 		if !checkPortAlive("localhost", "8080", 2*time.Second) { // payment gateway down, queue payments in the pending_transactions.json
@@ -315,7 +305,7 @@ func main() {
 			}
 
 			fmt.Println(payment)
-			file, _ = os.OpenFile("pending_transactions.json", os.O_WRONLY, 0644)
+			file, _ = os.OpenFile("offline_payments.json", os.O_WRONLY, 0644)
 			jsonData, _ := json.Marshal(payment)
 			file.Write(jsonData)
 			file.WriteString("\n")
