@@ -1,0 +1,1 @@
+# This repository contains source code of all projects done as a part of Distributed Systems Assignment 2 (Spring 2025) which covers essential concepts related to System Design, Microservices Architecture, Services Registry, RPCs, etc.
