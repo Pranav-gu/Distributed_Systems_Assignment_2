@@ -67,7 +67,6 @@ var (
 var users_loggedin map[string]int = make(map[string]int)
 var bankservers_conns map[string]stripe.BankServersClient = make(map[string]stripe.BankServersClient)
 
-// function taken from stackoverflow, how to read a file line by line
 func Readln(r *bufio.Reader) (string, error) {
 	var (
 		isPrefix bool  = true
